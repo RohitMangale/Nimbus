@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <h1>Nimbus</h1>
+      <h1 className=' text-2xl font-bold' >Nimbus</h1>
     </>
   )
 }
