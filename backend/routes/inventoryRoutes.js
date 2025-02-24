@@ -1,15 +1,28 @@
 const express = require("express");
-const authMiddleware = require("../middleware/authMiddleware");
-const roleMiddleware = require("../middleware/roleMiddleware");
+const { authenticate, authorizeRole } = require("../middleware/authMiddleware");
+const {
+    createInventoryItem,
+    getAllInventoryItems,
+    getInventoryItemById,
+    updateInventoryItem,
+    deleteInventoryItem
+} = require("../controllers/inventoryController");
 
 const router = express.Router();
 
-router.post("/add", authMiddleware, roleMiddleware("admin"), (req, res) => {
-    res.json({ message: "Inventory item added by admin" });
-});
+// CREATE
+router.post("/", authenticate, authorizeRole(["admin", "manager"]), createInventoryItem);
 
-router.get("/view", authMiddleware, roleMiddleware("user"), (req, res) => {
-    res.json({ message: "User viewing inventory" });
-});
+// READ all
+router.get("/", authenticate, authorizeRole(["admin", "manager", "technician", "staff"]), getAllInventoryItems);
+
+// READ single
+router.get("/:id", authenticate, authorizeRole(["admin", "manager", "technician", "staff"]), getInventoryItemById);
+
+// UPDATE
+router.put("/:id", authenticate, authorizeRole(["admin", "manager"]), updateInventoryItem);
+
+// DELETE
+router.delete("/:id", authenticate, authorizeRole(["admin", "manager"]), deleteInventoryItem);
 
 module.exports = router;
