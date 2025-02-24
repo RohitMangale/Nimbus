@@ -1,2 +1,32 @@
 
 @import "tailwindcss";
+
+
+
+
+@layer components {
+  
+
+    .widthContainer {
+      @apply  w-[1280px] ;
+    }
+
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
