@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import illustration  from '../assets/imgs/loginIllustration.png'
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FaEye, FaIdCard, FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+
 const Signup = () => {
     const [form, setForm] = useState({
         emp_id: "",
@@ -15,7 +16,7 @@ const Signup = () => {
         job_post: "",
         role: "employee", // Default role
     });
-
+    const navigate = useNavigate();
     const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
@@ -32,6 +33,19 @@ const Signup = () => {
         try {
             const res = await axios.post("http://localhost:5000/auth/signup", form);
             setMessage(res.data.message);
+            if (res.data.success) {
+                setForm({
+                    emp_id: "",
+                    first_name: "",
+                    last_name: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                    job_post: "",
+                    role: "employee", // Default role
+                });
+                navigate('/login');
+            }
 
         } catch (err) {
             setMessage(err.response?.data?.error || "Signup failed");
@@ -191,7 +205,7 @@ const Signup = () => {
             {/* {token && <p  className='w-auto p-2 font-bold  text-red-500  my-2 ' >Token: {token}</p>} */}
         {/* Register Link */}
         <Link to='/login' className="text-center text-sm mt-4">
-          Don’t have an account? <a href="#" className="text-purple-600 font-medium hover:underline">Register</a>
+          Don’t have an account? <a href="#" className="text-purple-600 font-medium hover:underline">Login</a>
         </Link>
       </form>
       </div>
