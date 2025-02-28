@@ -1,15 +1,37 @@
 const express = require("express");
-const authMiddleware = require("../middleware/authMiddleware");
-const roleMiddleware = require("../middleware/roleMiddleware");
+const multer = require("multer");
+const { authenticate, authorizeRole } = require("../middleware/authMiddleware");
+const {
+    createInventoryItem,
+    getAllInventoryItems,
+    getInventoryItemById,
+    updateInventoryItem,
+    deleteInventoryItem,
+    bulkImportInventoryItems, // Import new bulk import function
+} = require("../controllers/inventoryController");
 
 const router = express.Router();
 
-router.post("/add", authMiddleware, roleMiddleware("admin"), (req, res) => {
-    res.json({ message: "Inventory item added by admin" });
-});
+// Multer setup (store file in memory)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-router.get("/view", authMiddleware, roleMiddleware("user"), (req, res) => {
-    res.json({ message: "User viewing inventory" });
-});
+// CREATE
+router.post("/", authenticate, authorizeRole(["admin", "manager"]), createInventoryItem);
+
+// Bulk Import (Excel Upload)
+router.post("/bulk", authenticate, authorizeRole(["admin", "manager","technician","staff"]), upload.single("file"), bulkImportInventoryItems);
+
+// READ all
+router.get("/", authenticate, authorizeRole(["admin", "manager", "technician", "staff"]), getAllInventoryItems);
+
+// READ single
+router.get("/:id", authenticate, authorizeRole(["admin", "manager", "technician", "staff"]), getInventoryItemById);
+
+// UPDATE
+router.put("/:id", authenticate, authorizeRole(["admin", "manager"]), updateInventoryItem);
+
+// DELETE
+router.delete("/:id", authenticate, authorizeRole(["admin", "manager"]), deleteInventoryItem);
 
 module.exports = router;

@@ -1,9 +1,16 @@
 import React from 'react'
+import AppBenefits from '../components/AppBenefits';
 
-const Home = () => {
-  return (
-    <div>Home</div>
-  )
+
+function Home() {
+    return (
+      <div>
+        <h1>HOME</h1>
+        {/* <AppBenefits/> */}
+      </div>
+    )
 }
 
-export default Home
+export default Home;
+
+

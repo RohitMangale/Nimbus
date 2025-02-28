@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import illustration  from '../assets/imgs/loginIllustration.png'
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FaEye, FaIdCard, FaKey } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+
 const Signup = () => {
     const [form, setForm] = useState({
         emp_id: "",
@@ -13,9 +14,9 @@ const Signup = () => {
         password: "",
         confirmPassword: "",
         job_post: "",
-        role: "user", // Default role
+        role: "employee", // Default role
     });
-
+    const navigate = useNavigate();
     const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
@@ -32,6 +33,20 @@ const Signup = () => {
         try {
             const res = await axios.post("http://localhost:5000/auth/signup", form);
             setMessage(res.data.message);
+            if (res.data.success) {
+                setForm({
+                    emp_id: "",
+                    first_name: "",
+                    last_name: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                    job_post: "",
+                    role: "employee", // Default role
+                });
+                navigate('/login');
+            }
+
         } catch (err) {
             setMessage(err.response?.data?.error || "Signup failed");
         }
@@ -111,7 +126,7 @@ const Signup = () => {
             />
           </div>
         </div>  
- 
+        {/*  */}
         <div className="flex flex-row gap-4 flex-1  ">
         <div className="mb-4  flex-grow-1 ">
           <label className="text-gray-700 font-medium">Role</label>
@@ -130,7 +145,7 @@ const Signup = () => {
           <div className="flex items-center bg-gray-100 p-2 rounded-lg mt-1">
 
             <input
-              type="email" name="job_post"
+              type="text" name="job_post"
               className="bg-transparent flex-1 outline-none"
               placeholder="Employee Position" value={form.job_post} onChange={handleChange} required 
 
@@ -185,12 +200,12 @@ const Signup = () => {
         {/* Login Button */}
         {message && <p className='w-auto p-2 font-bold  text-green-500  my-2 text-center  text-2xl '  >{message}</p>}
         <button type="submit" className="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700">
-          Login
+          SignUp
         </button>
             {/* {token && <p  className='w-auto p-2 font-bold  text-red-500  my-2 ' >Token: {token}</p>} */}
         {/* Register Link */}
         <Link to='/login' className="text-center text-sm mt-4">
-          Don’t have an account? <a href="#" className="text-purple-600 font-medium hover:underline">Register</a>
+          Don’t have an account? <a href="#" className="text-purple-600 font-medium hover:underline">Login</a>
         </Link>
       </form>
       </div>
