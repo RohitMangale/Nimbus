@@ -1,5 +1,30 @@
 const supabase = require("../config/supabaseClient");
+const XLSX = require("xlsx");
 
+// Bulk Import Endpoint
+exports.bulkImportInventoryItems = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    // Read the Excel file from buffer
+    const workbook = XLSX.read(req.file.buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+    // Insert each row into the "items" table (assuming keys in JSON match column names)
+    const { data, error } = await supabase
+      .from("items")
+      .insert(jsonData);
+
+    if (error) return res.status(400).json({ error: error.message });
+    res.status(201).json({ message: "Bulk import successful", data });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
 // CREATE item
 exports.createInventoryItem = async (req, res) => {
     try {
