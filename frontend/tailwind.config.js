@@ -1,4 +1,4 @@
-import { withUt } from "uploadthing/tw"
+import { withUt } from "uploadthing/tw";
 
 /** @type {import('tailwindcss').Config} */
 export default withUt({
@@ -26,8 +26,8 @@ export default withUt({
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#4f46e5", // Indigo-600
+          foreground: "#ffffff",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -53,6 +53,19 @@ export default withUt({
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        indigo: {
+          50: "#eef2ff",
+          100: "#e0e7ff",
+          200: "#c7d2fe",
+          300: "#a5b4fc",
+          400: "#818cf8",
+          500: "#6366f1",
+          600: "#4f46e5",
+          700: "#4338ca",
+          800: "#3730a3",
+          900: "#312e81",
+          950: "#1e1b4b",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -76,5 +89,4 @@ export default withUt({
     },
   },
   plugins: [require("tailwindcss-animate")],
-})
-
+});

@@ -17,7 +17,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // CREATE
-router.post("/", authenticate, authorizeRole(["admin", "manager"]), createInventoryItem);
+router.post("/", authenticate, authorizeRole(["admin", "manager","technician","staff"]), createInventoryItem);
 
 // Bulk Import (Excel Upload)
 router.post("/bulk", authenticate, authorizeRole(["admin", "manager","technician","staff"]), upload.single("file"), bulkImportInventoryItems);
