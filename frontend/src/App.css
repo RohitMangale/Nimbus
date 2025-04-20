@@ -4,3 +4,13 @@
   width: 100%;
   /* text-align: center; */
 }
+.element::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
+}
+.element {
+  overflow: -moz-scrollbars-none; /* Hides the scrollbar */
+}
+
+div::-webkit-scrollbar {
+  display: none;
+}
