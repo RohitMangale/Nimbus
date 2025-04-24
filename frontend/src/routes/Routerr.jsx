@@ -23,6 +23,7 @@ const Routerr = () => {
       <Route path="/signup" element={<Signup />} />
     </Route>
 
+      {/* <Route path="/companyAuth" element={<CompanyAuth />} /> */}
 
     {/* Unauthorized page */}        
     <Route path="/unauthorized" element={<UnAuthorized />} />
@@ -30,9 +31,9 @@ const Routerr = () => {
     {/* Routes allowed to all authorized personnel */}
     <Route element={<RoleProtectedRoute allowedRoles={["employee", "admin", "manager", "technician", "staff"]} />}  >
       <Route path="/orders" element={<Order />} />
+      <Route path="/dashboard" element={<Dashboard />} />          
     </Route>
       {/* <Route path="/inventory" element={<Items />} /> */}
-      <Route path="/dashboard" element={<Dashboard />} />          
     
     {/* Routes allowed to only admin and manager */}
     <Route  element={<RoleProtectedRoute allowedRoles={["admin", "manager"]} />} >

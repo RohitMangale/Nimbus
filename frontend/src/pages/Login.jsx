@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from 'react';
 import axios from "axios";
 import illustration from '../assets/imgs/loginIllustration.png';
@@ -13,7 +12,9 @@ const Login = () => {
   const [form, setForm] = useState({
     email: "",
     password: "",
+    role: "employee", // default role
   });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,16 +24,23 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", form);
+      const res = await axios.post("http://localhost:5000/auth/login", {
+        email: form.email,
+        password: form.password,
+        userType: form.role,
+      });
+
       const token = res.data.token;
-      console.log(res.data);
-      const user = res.data.user; // Extract user details from response
+      const user = res.data.user;
+
       dispatch(setCredentials({ user, token }));
       localStorage.setItem("token", token);
       toast.success("Login successful!");
-      navigate('/userDashboard');
+
+      // Redirect based on role
+      navigate('/Dashboard');
+
     } catch (err) {
       toast.error(err.response?.data?.error || "Login failed");
     }
@@ -48,24 +56,6 @@ const Login = () => {
           <h2 className="text-2xl font-semibold text-gray-800 text-center">
             Welcome to <br /> <span className="text-purple-600 font-bold">Nimbus</span>
           </h2>
-
-          {/* Social Login Buttons */}
-          {/* <div className="mt-6">
-            <button className="flex items-center w-full p-3 border rounded-lg mb-3 hover:bg-gray-100">
-              <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" className="w-5 h-5 mr-3" />
-              Login with Google
-            </button>
-            <button className="flex items-center w-full p-3 border rounded-lg hover:bg-gray-100">
-              <img src="https://www.svgrepo.com/show/355061/facebook.svg" alt="Facebook" className="w-5 h-5 mr-3" />
-              Login with Facebook
-            </button>
-          </div>
-
-          <div className="flex items-center my-4">
-            <hr className="flex-grow border-gray-300" />
-            <span className="px-2 text-gray-500">OR</span>
-            <hr className="flex-grow border-gray-300" />
-          </div> */}
 
           {/* Email Input */}
           <div className="mb-4">
@@ -102,6 +92,20 @@ const Login = () => {
                 <FaEye className="w-5 h-5" />
               </button>
             </div>
+          </div>
+
+          {/* Role Selection */}
+          <div className="mb-4">
+            <label className="text-gray-700 font-medium">Login as</label>
+            <select
+              name="role"
+              value={form.role}
+              onChange={handleChange}
+              className="w-full mt-1 p-2 rounded-lg bg-gray-100"
+            >
+              <option value="employee">Employee</option>
+              <option value="company">Company (Admin)</option>
+            </select>
           </div>
 
           {/* Remember Me & Forgot Password */}
