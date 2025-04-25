@@ -10,7 +10,7 @@ const RoleProtectedRoute = ({ allowedRoles, redirectPath = "/login" }) => {
     // Not logged in: redirect to login
     return <Navigate to={redirectPath} replace />;
   }
-  if (!allowedRoles.includes(user?.role)) {
+  if (!allowedRoles.includes(user?.role_id)) {
     // Logged in but role is not allowed: redirect to an unauthorized page
     return <Navigate to="/unauthorized" replace />;
   }
