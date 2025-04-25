@@ -39,26 +39,26 @@ export default function Stock() {
     );
   });
 
-  useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found");
-          return;
-        }
+  // useEffect(() => {
+  //   const fetchInventory = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("No token found");
+  //         return;
+  //       }
 
-        const res = await axios.get("http://localhost:5000/inventory", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setInventoryItems(res.data.data || []);
-      } catch (err) {
-        console.error("Error fetching inventory:", err);
-      }
-    };
+  //       const res = await axios.get("http://localhost:5000/inventory", {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+  //       setInventoryItems(res.data.data || []);
+  //     } catch (err) {
+  //       console.error("Error fetching inventory:", err);
+  //     }
+  //   };
 
-    fetchInventory();
-  }, []);
+  //   fetchInventory();
+  // }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-6">

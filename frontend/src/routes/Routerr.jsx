@@ -30,7 +30,7 @@ const Routerr = () => {
 
     {/* Routes allowed to all authorized personnel */}
     <Route element={<RoleProtectedRoute allowedRoles={["employee", "admin", "manager", "technician", "staff"]} />}  >
-      <Route path="/orders" element={<Order />} />
+      {/* <Route path="/orders" element={<Order />} /> */}
       <Route path="/dashboard" element={<Dashboard />} />          
     </Route>
       {/* <Route path="/inventory" element={<Items />} /> */}

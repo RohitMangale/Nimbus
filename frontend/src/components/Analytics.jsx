@@ -19,56 +19,7 @@ export default function Analytics() {
   const [categoryCount, setCategoryCount] = useState([]);
   const [acquisitionTrends, setAcquisitionTrends] = useState([]);
 
-  useEffect(() => {
-    fetchInventory();
-  }, []);
 
-  const fetchInventory = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found. Please login.");
-        return;
-      }
-      const response = await axios.get("http://localhost:5000/inventory", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const items = response.data.data;
-      setInventoryItems(items);
-
-      // Stats
-      const totalItems = items.length;
-      const inStock = items.filter(
-        (item) => item.inventory_status.toLowerCase() === "in stock"
-      ).length;
-      const outOfStock = totalItems - inStock;
-      setStats({ totalItems, inStock, outOfStock });
-
-      // Category Count
-      const countMap = {};
-      items.forEach((item) => {
-        const category = item.category_name || "Uncategorized";
-        countMap[category] = (countMap[category] || 0) + 1;
-      });
-      setCategoryCount(
-        Object.entries(countMap).map(([name, count]) => ({ name, count }))
-      );
-
-      // Acquisition Trend
-      const trendsMap = {};
-      items.forEach((item) => {
-        const date = new Date(item.acquired_date).toISOString().split("T")[0];
-        trendsMap[date] = (trendsMap[date] || 0) + 1;
-      });
-      const trendData = Object.entries(trendsMap)
-        .map(([date, count]) => ({ date, count }))
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-      setAcquisitionTrends(trendData);
-
-    } catch (error) {
-      console.error("Error fetching inventory:", error);
-    }
-  };
 
   const pieData = [
     { name: "In Stock", value: stats.inStock },
