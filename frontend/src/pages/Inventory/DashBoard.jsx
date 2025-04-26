@@ -12,7 +12,7 @@ import {
   Bell,
   HelpCircle,
   Cross,
-  X,
+  Wrench,
 } from "lucide-react";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
@@ -24,11 +24,14 @@ import Stock from "../../components/Stock";
 import EmployeeManagement from "../../components/EmployeeManagement";
 import Analytics from "../../components/Analytics";
 import UserProfileForm from "../../components/UserProfileForm";
+import Templates from "../../components/Templates";
+import DynamicForm from "../../components/TemplateForm";
+import CreateCustomTemplate from "../../components/CreateCustomTemplate";
 
 const SIDEBAR_TABS = [
   { key: "inventory", icon: Package, label: "Inventory", subtabs: ["Analytics", "Stock", "Upload Component"] },
   { key: "profile", icon: User, label: "Profile", subtabs: ["Account","Roles", "Employee Management","Security"] },
-  { key: "tags", icon: Tags, label: "Tags", subtabs: ["All Tags", "Create Tag"] },
+  { key: "maintenenace", icon: Wrench, label: "Maintenenace", subtabs: ["Templates","Custom Template"] },
   { key: "package", icon: Package, label: "Package", subtabs: ["Shipments", "Returns"] },
   { key: "another", icon: ChevronRight, label: "Another", subtabs: ["Custom1", "Custom2"] },
 ];
@@ -178,9 +181,7 @@ export default function Dashboard() {
       <div className="p-6 max-h-screen overflow-scroll">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">{`${currentTab?.label} - ${subtab}`}</h1>
-          <div className="flex gap-2">
-            <Button className=" cursor-pointer" onClick={() => setIsModalOpen(true)}>ADD ITEM</Button>
-          </div>
+
         </div>
 
         {/* Dummy content renderer */}
@@ -194,8 +195,10 @@ export default function Dashboard() {
         {tab === "profile" && subtab === "Employee Management" && <EmployeeManagement />}
 
         {/* You can add additional conditions for each tab + subtab combo below */}
-        {tab === "inventory" && subtab === "Stock" && <div>Stock Component Placeholder</div>}
-        {tab === "tags" && <div>Tags Component Placeholder</div>}
+        {tab === "maintenenace" && subtab === "Templates" && <Templates />}
+        {/* {tab === "maintenenace" && subtab === "Template Form" && <DynamicForm />} */}
+        {tab === "maintenenace" && subtab === "Custom Template" && <CreateCustomTemplate />}
+        {/* {tab === "maintenenace" && subtab === "Templates" && <Templates />} */}
         {tab === "package" && <div>Package Component Placeholder</div>}
         {tab === "another" && <div>Another Component Placeholder</div>}
       </div>

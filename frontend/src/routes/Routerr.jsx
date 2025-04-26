@@ -9,6 +9,7 @@ import PageNotFound from '../pages/PageNotFound';
 import GuestRoute from '../routes/GuestRoute.jsx';
 import Navbar from '../components/Navbar.jsx';
 import Dashboard from '../pages/Inventory/DashBoard';
+import DynamicForm from '../components/TemplateForm.jsx';
 
 const Routerr = () => {
   return (
@@ -34,7 +35,7 @@ const Routerr = () => {
       <Route path="/dashboard" element={<Dashboard />} />          
     </Route>
       {/* <Route path="/inventory" element={<Items />} /> */}
-    
+      <Route path="/form/:templateKey" element={<DynamicForm />} />
     {/* Routes allowed to only admin and manager */}
     <Route  element={<RoleProtectedRoute allowedRoles={["admin", "manager"]} />} >
       {/* <Route path="/dashboard" element={<DashBoard/>} /> */}
