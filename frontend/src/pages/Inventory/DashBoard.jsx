@@ -6,12 +6,11 @@ import {
   User,
   Tags,
   ChevronRight,
-  History,
+  Store,
   Trash2,
   Settings,
   Bell,
-  HelpCircle,
-  Cross,
+  HelpCircle,  
   Wrench,
 } from "lucide-react";
 import { Button } from "../../components/Button";
@@ -27,13 +26,20 @@ import UserProfileForm from "../../components/UserProfileForm";
 import Templates from "../../components/Templates";
 import DynamicForm from "../../components/TemplateForm";
 import CreateCustomTemplate from "../../components/CreateCustomTemplate";
+import PartsMarketplace from "../../components/PartsMarketplace";
+import Notifications from "../../components/Notifications";
 
 const SIDEBAR_TABS = [
   { key: "inventory", icon: Package, label: "Inventory", subtabs: ["Analytics", "Stock", "Upload Component"] },
   { key: "profile", icon: User, label: "Profile", subtabs: ["Account","Roles", "Employee Management","Security"] },
   { key: "maintenenace", icon: Wrench, label: "Maintenenace", subtabs: ["Templates","Custom Template"] },
+  { key: "market", icon: Store, label: "Market", subtabs: ["Parts Marketplace"] },
   { key: "package", icon: Package, label: "Package", subtabs: ["Shipments", "Returns"] },
   { key: "another", icon: ChevronRight, label: "Another", subtabs: ["Custom1", "Custom2"] },
+ // --- Lower Icons as real tabs ---
+ { key: "notifications", icon: Bell, label: "Notifications", subtabs: ["View Notifications", "Notification Settings"] },
+ { key: "help", icon: HelpCircle, label: "Help Center", subtabs: ["FAQs", "Contact Support"] },
+ { key: "settings", icon: Settings, label: "Settings", subtabs: ["Account Settings", "System Settings"] },
 ];
 
 export default function Dashboard() {
@@ -121,35 +127,45 @@ export default function Dashboard() {
   return (
     <div className="flex h-[calc(100vh-70px)] bg-white">
     {/* Sidebar */}
-    <div className="w-16 bg-indigo-600 flex flex-col items-center py-4 text-white">
-      <nav className="flex flex-col gap-6 items-center flex-1">
-        {SIDEBAR_TABS.map(({ key, icon: Icon }) => (
-          <button
-            key={key}
-            
-            onClick={() => {
-              setTab(key);
-              setSubtab(SIDEBAR_TABS.find(t => t.key === key)?.subtabs?.[0] || "");
-            }}
-            className={`p-2 transition-all duration-200 rounded-lg ${
-              tab === key ? "bg-white text-indigo-600" : "hover:bg-indigo-700"
-            }`}
-          >
-            <Icon className="w-5 h-5 cursor-pointer" />
-          </button>
-        ))}
-      </nav>
-      <div className="flex flex-col gap-4   mt-auto">
-        {[Bell, HelpCircle, Settings].map((Icon, index) => (
-          <button
-            key={index}
-            className="p-2 hover:bg-indigo-700 rounded-lg transition-colors"
-          >
-            <Icon className="w-5 h-5" />
-          </button>
-        ))}
-      </div>
-    </div>
+    {/* Sidebar */}
+<div className="w-16 bg-indigo-600 flex flex-col items-center py-4 text-white">
+  {/* Top Tabs */}
+  <nav className="flex flex-col gap-6 items-center flex-1">
+    {SIDEBAR_TABS.slice(0, 6).map(({ key, icon: Icon }) => (
+      <button
+        key={key}
+        onClick={() => {
+          setTab(key);
+          setSubtab(SIDEBAR_TABS.find(t => t.key === key)?.subtabs?.[0] || "");
+        }}
+        className={`p-2 transition-all duration-200 rounded-lg ${
+          tab === key ? "bg-white text-indigo-600" : "hover:bg-indigo-700"
+        }`}
+      >
+        <Icon className="w-5 h-5 cursor-pointer" />
+      </button>
+    ))}
+  </nav>
+
+  {/* Bottom Tabs */}
+  <div className="flex flex-col gap-4 mt-auto">
+    {SIDEBAR_TABS.slice(6).map(({ key, icon: Icon }) => (
+      <button
+        key={key}
+        onClick={() => {
+          setTab(key);
+          setSubtab(SIDEBAR_TABS.find(t => t.key === key)?.subtabs?.[0] || "");
+        }}
+        className={`p-2 transition-all cursor-pointer duration-200 rounded-lg ${
+          tab === key ? "bg-white text-indigo-600" : "hover:bg-indigo-700"
+        }`}
+      >
+        <Icon className="w-5 h-5 cursor-pointer" />
+      </button>
+    ))}
+  </div>
+</div>
+
 
     {/* Left Panel */}
     <div className="w-68 border-r border-gray-200 p-4 flex flex-col">
@@ -178,7 +194,7 @@ export default function Dashboard() {
 
     {/* Main Content */}
     <div className="flex-1 overflow-hidden">
-      <div className="p-6 max-h-screen overflow-scroll">
+      <div className="p-6 max-h-screen mb-3 overflow-scroll">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">{`${currentTab?.label} - ${subtab}`}</h1>
 
@@ -199,8 +215,13 @@ export default function Dashboard() {
         {/* {tab === "maintenenace" && subtab === "Template Form" && <DynamicForm />} */}
         {tab === "maintenenace" && subtab === "Custom Template" && <CreateCustomTemplate />}
         {/* {tab === "maintenenace" && subtab === "Templates" && <Templates />} */}
+        {tab === "market" && <PartsMarketplace/>}
         {tab === "package" && <div>Package Component Placeholder</div>}
         {tab === "another" && <div>Another Component Placeholder</div>}
+
+        {tab === "notifications" && <Notifications/>}
+{tab === "help" && <div>Help Center Content</div>}
+{tab === "settings" && <div>Settings Page Content</div>}
       </div>
     </div>
 
