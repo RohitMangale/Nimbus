@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios"; // ✅ Make sure axios is imported
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Oval } from "react-loader-spinner";
+// import { Oval } from "react-loader-spinner";
 
 // const initialEmployees = [
 //   {
@@ -315,16 +315,26 @@ const EmployeeManagement = () => {
                   disabled={loading}
                 >
                   {loading ? (
-                    <Oval
-                      height={20}
-                      width={20}
-                      color="#ffffff"
-                      visible={true}
-                      ariaLabel="oval-loading"
-                      secondaryColor="#f3f3f3"
-                      strokeWidth={2}
-                      strokeWidthSecondary={2}
-                    />
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 text-white"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v2a6 6 0 100 12v2a8 8 0 01-8-8z"
+                      ></path>
+                    </svg>
                   ) : editingEmp ? (
                     "Save Changes"
                   ) : (
