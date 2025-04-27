@@ -8,7 +8,7 @@ export const Button = ({ children, variant = "default", className = "", ...props
       : "bg-indigo-600 text-white hover:bg-indigo-700";
 
   return (
-    <button className={`${baseStyle} ${variantStyle} ${className}`} {...props}>
+    <button className={` cursor-pointer ${baseStyle} ${variantStyle} ${className}`} {...props}>
       {children}
     </button>
   );

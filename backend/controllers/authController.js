@@ -86,7 +86,7 @@ exports.login = async (req, res) => {
       tokenPayload.company_id = user.company_id;
     }
 
-    const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "10hr" });
+    const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "10d" });
 
     // Remove password from user before sending back
     const { password: pwd, ...userWithoutPassword } = user;
