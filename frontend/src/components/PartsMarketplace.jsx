@@ -23,10 +23,28 @@ const mockParts = [
     name: "Fuselage Panel",
     partNumber: "FP-2024-089",
     category: "Structural",
-    ownedBy: "AeroCorp Industries",
+    ownedBy: "GlobalAir Maintenance",
     condition: "New",
     location: "Storage C",
     lastInspection: "2024-04-01"
+  },
+  {
+    name: "Avionics Control Unit",
+    partNumber: "ACU-2024-123",
+    category: "Electronics",
+    ownedBy: "AviationPlus Corp",
+    condition: "Refurbished",
+    location: "Lab D",
+    lastInspection: "2024-04-15"
+  },
+  {
+    name: "Hydraulic Pump",
+    partNumber: "HP-2024-234",
+    category: "Hydraulics",
+    ownedBy: "TechOps Services",
+    condition: "Used",
+    location: "Warehouse E",
+    lastInspection: "2024-03-30"
   }
 ];
 const PartsMarketplace = () => {

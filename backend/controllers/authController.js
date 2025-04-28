@@ -77,7 +77,7 @@ exports.login = async (req, res) => {
       email: user.email,
       role: user.role_id, // "company" or "employee"
     };
-    console.log(tokenPayload)
+    // console.log(tokenPayload)
 
     if (userType === "employee") {
       tokenPayload.emp_id = user.emp_id;
