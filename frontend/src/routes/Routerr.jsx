@@ -9,18 +9,18 @@ import PageNotFound from '../pages/PageNotFound';
 import GuestRoute from '../routes/GuestRoute.jsx';
 import Navbar from '../components/Navbar.jsx';
 import Dashboard from '../pages/Inventory/DashBoard';
-
+import MintPart from '../pages/MintPart.jsx'
 const Routerr = () => {
   return (
     <>
     <Navbar/>
     <Routes>
     <Route path="/" element={<Home />} />
-
+    <Route path="/mint" element={<MintPart />} />
     {/* Guest Routes: Only accessible when NOT logged in */} 
     <Route element={<GuestRoute redirectPath="/dashboard" />}>
-      <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
     </Route>
 
       {/* <Route path="/companyAuth" element={<CompanyAuth />} /> */}
@@ -29,12 +29,12 @@ const Routerr = () => {
     <Route path="/unauthorized" element={<UnAuthorized />} />
 
     {/* Routes allowed to all authorized personnel */}
-    <Route element={<RoleProtectedRoute allowedRoles={["employee", "admin", "manager", "technician", "staff"]} />}  >
+    {/* <Route element={<RoleProtectedRoute allowedRoles={["employee", "admin", "manager", "technician", "staff"]} />}  > */}
       {/* <Route path="/orders" element={<Order />} /> */}
-      <Route path="/dashboard" element={<Dashboard />} />          
-    </Route>
+      {/* <Route path="/dashboard" element={<Dashboard />} />           */}
+    {/* </Route> */}
       {/* <Route path="/inventory" element={<Items />} /> */}
-    
+      <Route path="/dashboard" element={<Dashboard />} />     
     {/* Routes allowed to only admin and manager */}
     <Route  element={<RoleProtectedRoute allowedRoles={["admin", "manager"]} />} >
       {/* <Route path="/dashboard" element={<DashBoard/>} /> */}
