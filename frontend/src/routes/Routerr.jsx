@@ -40,6 +40,7 @@ const Routerr = () => {
       {/* <Route path="/dashboard" element={<Dashboard />} />           */}
     {/* </Route> */}
       {/* <Route path="/inventory" element={<Items />} /> */}
+      <Route/>
 
       <Route path="/dashboard" element={<Dashboard />} />          
       <Route path="/notifications" element={<Notifications />} />          
