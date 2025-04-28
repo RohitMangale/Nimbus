@@ -4,8 +4,12 @@ const {
     createMaintenance,
     getAllMaintenance,
     getMaintenanceById,
+    createTemplate,
     updateMaintenance,
-    deleteMaintenance
+    deleteMaintenance,
+    getAllTemplates,
+    getTemplatesById,
+
 } = require("../controllers/maintenanceController");
 
 const router = express.Router();
@@ -16,6 +20,7 @@ const router = express.Router();
  * @access  admin, manager, technician
  */
 router.post("/", authenticate, authorizeRole(["admin", "manager", "technician"]), createMaintenance);
+router.post("/template/create", authenticate, createTemplate);
 
 /**
  * @route   GET /maintenance
@@ -23,6 +28,8 @@ router.post("/", authenticate, authorizeRole(["admin", "manager", "technician"])
  * @access  admin, manager, technician, staff
  */
 router.get("/", authenticate, authorizeRole(["admin", "manager", "technician", "staff"]), getAllMaintenance);
+router.get("/templates", authenticate, getAllTemplates);
+router.get("/template/:id", authenticate, getTemplatesById);
 
 /**
  * @route   GET /maintenance/:id

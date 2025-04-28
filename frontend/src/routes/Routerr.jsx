@@ -10,6 +10,11 @@ import GuestRoute from '../routes/GuestRoute.jsx';
 import Navbar from '../components/Navbar.jsx';
 import Dashboard from '../pages/Inventory/DashBoard';
 import MintPart from '../pages/MintPart.jsx'
+
+import DynamicForm from '../components/TemplateForm.jsx';
+import Notifications from '../components/Notifications.jsx';
+
+
 const Routerr = () => {
   return (
     <>
@@ -31,10 +36,17 @@ const Routerr = () => {
     {/* Routes allowed to all authorized personnel */}
     {/* <Route element={<RoleProtectedRoute allowedRoles={["employee", "admin", "manager", "technician", "staff"]} />}  > */}
       {/* <Route path="/orders" element={<Order />} /> */}
+
       {/* <Route path="/dashboard" element={<Dashboard />} />           */}
     {/* </Route> */}
       {/* <Route path="/inventory" element={<Items />} /> */}
-      <Route path="/dashboard" element={<Dashboard />} />     
+
+      <Route path="/dashboard" element={<Dashboard />} />          
+      <Route path="/notifications" element={<Notifications />} />          
+    </Route>
+      {/* <Route path="/inventory" element={<Items />} /> */}
+      <Route path="/form/:templateKey" element={<DynamicForm />} />
+
     {/* Routes allowed to only admin and manager */}
     <Route  element={<RoleProtectedRoute allowedRoles={["admin", "manager"]} />} >
       {/* <Route path="/dashboard" element={<DashBoard/>} /> */}

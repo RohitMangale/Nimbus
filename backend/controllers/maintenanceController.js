@@ -1,5 +1,42 @@
 const supabase = require('../config/supabaseClient');
 
+
+exports.createTemplate = async (req, res) => {
+    try {
+      const { name, fields, company_id } = req.body;
+  
+      if (!name || !fields || !company_id ) {
+        return res.status(400).json({ error: "Missing required fields." });
+      }
+  
+      const { data, error } = await supabase
+        .from("form_templates")
+        .insert([
+          {
+            title: name,
+            fields: fields,
+            company_id: company_id,
+          },
+        ])
+        .select()
+        .single();
+  
+      if (error) {
+        console.error("Supabase insert error:", error);
+        return res.status(500).json({ error: error.message });
+      }
+  
+      return res.status(201).json({
+        message: "Template created successfully.",
+        template: data,
+      });
+    } catch (err) {
+      console.error("Controller error:", err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+  
+
 // CREATE maintenance record
 exports.createMaintenance = async (req, res) => {
     try {
@@ -43,7 +80,7 @@ exports.getAllMaintenance = async (req, res) => {
         if (error) return res.status(400).json({ error: error.message });
         res.json({ data });
     } catch (err) {
-        res.status(500).json({ error: "Server error" });
+        res.status(500).json({ error: err});
     }
 };
 
@@ -55,6 +92,38 @@ exports.getMaintenanceById = async (req, res) => {
             .from("maintenance")
             .select("*")
             .eq("maintenance_id", id)
+            .single();
+
+        if (error) return res.status(404).json({ error: error.message });
+        res.json({ data });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+// READ all maintenance records
+exports.getAllTemplates = async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from("form_templates")
+            .select("*");
+        console.log("Templates data:", data); // Debugging line
+
+        if (error) return res.status(400).json({ error: error.message });
+        res.json({ data });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+// READ single maintenance record
+exports.getTemplatesById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase
+            .from("form_templates")
+            .select("*")
+            .eq("id", id)
             .single();
 
         if (error) return res.status(404).json({ error: error.message });
