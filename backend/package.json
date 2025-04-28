@@ -10,15 +10,17 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@pinata/sdk": "^2.1.0",
     "@supabase/supabase-js": "^2.48.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.1",
     "pg": "^8.13.3",
+    "web3": "^1.10.0",
     "xlsx": "^0.18.5"
   }
 }
