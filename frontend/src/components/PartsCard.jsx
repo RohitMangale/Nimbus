@@ -1,18 +1,10 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plane } from "lucide-react";
 
-// interface PartProps {
-//   name: string;
-//   partNumber: string;
-//   category: string;
-//   ownedBy: string;
-//   condition: string;
-//   location: string;
-//   lastInspection: string;
-// }
 
-const PartsCard = ({ name, partNumber, category, ownedBy, condition, location, lastInspection }) => {
+const PartCard = ({ name, partNumber, category, ownedBy, condition, location, lastInspection }) => {
   return (
     <Card className="w-full hover:shadow-lg transition-shadow">
       <CardHeader className="flex flex-row items-center gap-4">
@@ -50,4 +42,4 @@ const PartsCard = ({ name, partNumber, category, ownedBy, condition, location, l
   );
 };
 
-export default PartsCard;
+export default PartCard;
