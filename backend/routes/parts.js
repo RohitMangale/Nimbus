@@ -111,32 +111,30 @@ router.post('/list', async (req, res) => {
     const { serialId, price } = req.body;
     const [account] = await web3.eth.getAccounts();
 
-    // Add gas price estimation
-    const gasPrice = await web3.eth.getGasPrice();
+    // Get part ID from contract
+    const partId = await partRegistry.methods.serialToPartId(serialId).call();
     
     const tx = await partRegistry.methods
       .listForSaleBySerial(serialId, price)
-      .send({
-        from: account,
-        gas: 500000,
-        gasPrice: gasPrice
+      .send({ 
+        from: account, 
+        gas: 500000 
       });
 
     res.json({ 
       success: true,
       txHash: tx.transactionHash,
-      partId: serialToPartId[serialId] // Add this line
+      partId: partId.toString()
     });
     
   } catch (err) {
-    console.error('List Error:', err); // Add logging
+    console.error('List Error:', err);
     res.status(400).json({ 
       error: err.message,
-      contractError: err.data?.message // Add contract revert reason
+      contractError: err.data?.message
     });
   }
 });
-
 // Unlist route - critical fix
 router.post('/unlist', async (req, res) => {
   try {
@@ -167,6 +165,35 @@ router.post('/unlist', async (req, res) => {
       error: err.message,
       contractError: err.data?.message
     });
+  }
+});
+
+router.get('/marketplace', async (req, res) => {
+  try {
+    // First get all listed part IDs
+    const totalParts = await partRegistry.methods.totalParts().call();
+    const listedParts = [];
+
+    // Manual iteration to find listed parts
+    for (let id = 0; id < totalParts; id++) {
+      const part = await partRegistry.methods.parts(id).call();
+      if (part.forSale) {
+        const details = await partRegistry.methods.getPartDetails(id).call();
+        listedParts.push({
+          id: id.toString(),
+          serialId: part.serialId,
+          owner: details.owner,
+          description: details.partDescription,
+          company: details.manufacturingCompany,
+          cid: details.latestMaintenanceCID
+        });
+      }
+    }
+
+    res.json(listedParts);
+  } catch (err) {
+    console.error('Marketplace Error:', err);
+    res.status(500).json({ error: 'Failed to fetch marketplace listings' });
   }
 });
 
