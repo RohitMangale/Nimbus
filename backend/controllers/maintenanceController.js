@@ -107,7 +107,7 @@ exports.getAllTemplates = async (req, res) => {
         const { data, error } = await supabase
             .from("form_templates")
             .select("*");
-        console.log("Templates data:", data); // Debugging line
+        // console.log("Templates data:", data); // Debugging line
 
         if (error) return res.status(400).json({ error: error.message });
         res.json({ data });
