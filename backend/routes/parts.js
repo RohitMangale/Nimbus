@@ -1,99 +1,320 @@
 const express = require('express');
 const router = express.Router();
-const { registryA, registryB, registryM, web3A, web3B, web3M } = require('../blockchain');
+const { partRegistry, web3 } = require('../blockchain'); // Single instance
 
-// Improved network configuration handler
-const getNetworkConfig = (network) => {
-  const upperNetwork = network.toUpperCase();
-  switch(upperNetwork) {
-    case 'A': return { contract: registryA, web3: web3A };
-    case 'B': return { contract: registryB, web3: web3B };
-    case 'M': return { contract: registryM, web3: web3M };
-    default: throw new Error(`Invalid network specified: ${network}`);
-  }
-};
-
-// Enhanced CID validation
-const isValidCID = (cid) => 
-  typeof cid === 'string' && 
-  cid.startsWith('Qm') && 
-  cid.length === 46 && 
+// CID Validation
+const isValidCID = (cid) =>
+  typeof cid === 'string' &&
+  cid.startsWith('Qm') &&
+  cid.length === 46 &&
   /^[1-9A-HJ-NP-Za-km-z]{44}$/.test(cid.slice(2));
 
-router.post('/mint/:network', async (req, res) => {
-  try {
-    const { id, maintenanceCID, certificateCID } = req.body;
-    const network = req.params.network.toUpperCase();
-
-    // Validate inputs
-    const errors = [];
-    if (typeof id !== 'number' || id <= 0) errors.push('ID must be positive integer');
-    if (!isValidCID(maintenanceCID)) errors.push('Invalid maintenance CID');
-    if (!isValidCID(certificateCID)) errors.push('Invalid certificate CID');
-    
-    if (errors.length > 0) {
-      return res.status(400).json({ 
-        error: 'Validation failed',
-        details: errors 
-      });
-    }
-
-    // Get network configuration
-    const { contract, web3 } = getNetworkConfig(network);
-    const [account] = await web3.eth.getAccounts();
-
-    // Gas estimation with fallback
-    let gasEstimate;
+  // Function to get parts by owner address from blockchain
+  const getPartsByOwner = async (ownerName) => {
     try {
-      gasEstimate = await contract.methods
-        .mintPart(id, maintenanceCID, certificateCID)
-        .estimateGas({ from: account });
-    } catch (estimateError) {
-      console.error('Gas estimation failed:', estimateError);
-      return res.status(400).json({
-        error: 'Transaction simulation failed',
-        details: process.env.NODE_ENV === 'development' ? estimateError.message : null
-      });
+      const parts = await partRegistry.methods.getPartsByOwner(ownerName).call();
+      return parts;
+    } catch (err) {
+      console.error('Error fetching parts from blockchain:', err);
+      throw err;
+    }
+  };
+  const verifyOwnership = async (partId, ownerAddress) => {
+    const part = await partRegistry.methods.parts(partId).call();
+    if (part.owner.toLowerCase() !== ownerAddress.toLowerCase()) {
+      throw new Error('Caller is not the owner of this part');
+    }
+  };
+
+// Create Part
+// Create Part
+router.post('/create', async (req, res) => {
+  try {
+    const {
+      owner,
+      serialId,
+      partDescription,
+      manufacturingCompany,
+      manufacturingDate,
+      initialMaintenanceCID,
+      initialDescription,
+       // <-- New field
+    } = req.body;
+
+    // Input Validation
+    const errors = [];
+    if (!serialId) errors.push('Serial ID is required');
+    if (!partDescription) errors.push('Part description is required');
+    if (!manufacturingCompany) errors.push('Manufacturing company is required');
+    if (!manufacturingDate || isNaN(manufacturingDate)) errors.push('Valid manufacturing date required');
+    if (!initialMaintenanceCID || !isValidCID(initialMaintenanceCID)) errors.push('Valid initial maintenance CID required');
+    if (!initialDescription) errors.push('Initial description required');
+    if (!owner || typeof owner !== 'string') errors.push('Valid owner name/address is required');
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: 'Validation failed', details: errors });
     }
 
-    // Send transaction with gas buffer
-    const tx = await contract.methods
-      .mintPart(id, maintenanceCID, certificateCID)
+    const accounts = await web3.eth.getAccounts();
+    const sender = accounts[0];
+
+    // Estimate Gas
+    const gasEstimate = await partRegistry.methods
+      .createPart(
+        owner,
+        serialId,
+        partDescription,
+        manufacturingCompany,
+        manufacturingDate,
+        initialMaintenanceCID,
+        initialDescription
+      )
+      .estimateGas({ from: sender });
+
+    // Send Transaction
+    const tx = await partRegistry.methods
+      .createPart(
+        owner,
+        serialId,
+        partDescription,
+        manufacturingCompany,
+        manufacturingDate,
+        initialMaintenanceCID,
+        initialDescription,
+        // <-- Pass owner to contract
+      )
       .send({
-        from: account,
-        gas: Math.floor(gasEstimate * 1.2), // 20% buffer
+        from: sender,
+        gas: Math.floor(gasEstimate * 1.2),
         gasPrice: await web3.eth.getGasPrice()
       });
 
     res.json({
       success: true,
-      network,
-      id,
-      maintenanceCID,
-      certificateCID,
       txHash: tx.transactionHash,
       blockNumber: tx.blockNumber
     });
 
   } catch (err) {
-    console.error(`Mint Error [${req.params.network}]:`, err);
-    
-    const errorMessage = err.message.includes('revert') 
-      ? 'Part ID already exists or contract error'
-      : 'Blockchain transaction failed';
-
-    const errorDetails = process.env.NODE_ENV === 'development' ? {
-      message: err.message,
-      stack: err.stack,
-      network: req.params.network,
-      input: req.body
-    } : null;
-
-    res.status(400).json({ 
-      error: errorMessage,
-      details: errorDetails
+    console.error(`Create Part Error:`, err);
+    res.status(400).json({
+      error: 'Blockchain transaction failed',
+      details: err.message
     });
   }
 });
+
+
+// List route - keep existing validation removal
+router.post('/list', async (req, res) => {
+  try {
+    const { serialId, price } = req.body;
+    const [account] = await web3.eth.getAccounts();
+
+    // Add gas price estimation
+    const gasPrice = await web3.eth.getGasPrice();
+    
+    const tx = await partRegistry.methods
+      .listForSaleBySerial(serialId, price)
+      .send({
+        from: account,
+        gas: 500000,
+        gasPrice: gasPrice
+      });
+
+    res.json({ 
+      success: true,
+      txHash: tx.transactionHash,
+      partId: serialToPartId[serialId] // Add this line
+    });
+    
+  } catch (err) {
+    console.error('List Error:', err); // Add logging
+    res.status(400).json({ 
+      error: err.message,
+      contractError: err.data?.message // Add contract revert reason
+    });
+  }
+});
+
+// Unlist route - critical fix
+router.post('/unlist', async (req, res) => {
+  try {
+    const { serialId } = req.body;
+    const [account] = await web3.eth.getAccounts();
+    const gasPrice = await web3.eth.getGasPrice();
+
+    // First get part ID from serial
+    const partId = await partRegistry.methods.serialToPartId(serialId).call();
+    
+    const tx = await partRegistry.methods
+      .unlistFromSaleBySerial(serialId)
+      .send({
+        from: account,
+        gas: 300000,
+        gasPrice: gasPrice
+      });
+
+    res.json({ 
+      success: true,
+      txHash: tx.transactionHash,
+      partId: partId.toString()
+    });
+
+  } catch (err) {
+    console.error('Unlist Error:', err);
+    res.status(400).json({
+      error: err.message,
+      contractError: err.data?.message
+    });
+  }
+});
+
+router.post('/transfer', async (req, res) => {
+  try {
+    const { id, to } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({ error: 'Valid Part ID is required' });
+    }
+    if (!web3.utils.isAddress(to)) {
+      return res.status(400).json({ error: 'Valid recipient address is required' });
+    }
+
+    const [account] = await web3.eth.getAccounts();
+
+    const gasEstimate = await partRegistry.methods
+      .transferOwnership(id, to)
+      .estimateGas({ from: account });
+
+    const tx = await partRegistry.methods
+      .transferOwnership(id, to)
+      .send({
+        from: account,
+        gas: Math.floor(gasEstimate * 1.2),
+        gasPrice: await web3.eth.getGasPrice()
+      });
+
+    res.json({
+      success: true,
+      txHash: tx.transactionHash,
+      blockNumber: tx.blockNumber
+    });
+
+  } catch (err) {
+    console.error('Transfer Ownership Error:', err);
+    res.status(400).json({ error: 'Blockchain transaction failed', details: err.message });
+  }
+});
+
+// add a maintenance
+
+router.post('/maintenance', async (req, res) => {
+  try {
+    const { id, description, maintenanceCID } = req.body;
+
+    if (!id || isNaN(id)) {
+      return res.status(400).json({ error: 'Valid Part ID is required' });
+    }
+    if (!description) {
+      return res.status(400).json({ error: 'Description is required' });
+    }
+    if (!maintenanceCID) {
+      return res.status(400).json({ error: 'Maintenance CID is required' });
+    }
+
+    const [account] = await web3.eth.getAccounts();
+
+    const gasEstimate = await partRegistry.methods
+      .addMaintenanceRecord(id, description, maintenanceCID)
+      .estimateGas({ from: account });
+
+    const tx = await partRegistry.methods
+      .addMaintenanceRecord(id, description, maintenanceCID)
+      .send({
+        from: account,
+        gas: Math.floor(gasEstimate * 1.2),
+        gasPrice: await web3.eth.getGasPrice()
+      });
+
+    res.json({
+      success: true,
+      txHash: tx.transactionHash,
+      blockNumber: tx.blockNumber
+    });
+
+  } catch (err) {
+    console.error('Add Maintenance Error:', err);
+    res.status(400).json({ error: 'Blockchain transaction failed', details: err.message });
+  }
+});
+
+router.get('/owner/:ownerName', async (req, res) => {
+  try {
+    const { ownerName } = req.params;
+
+    // Get part IDs
+    const rawPartIds = await partRegistry.methods.getPartsByOwner(ownerName).call();
+    if (!rawPartIds.length) return res.status(404).json({ error: 'No parts found' });
+
+    // Fetch detailed part information
+    const parts = await Promise.all(
+      rawPartIds.map(async (id) => {
+        const partDetails = await partRegistry.methods.getPartDetails(id).call();
+        
+        // Get full maintenance history
+        const maintenanceCount = await partRegistry.methods
+          .getMaintenanceHistoryCount(id)
+          .call();
+        
+        const maintenanceHistory = [];
+        for (let i = 0; i < maintenanceCount; i++) {
+          const record = await partRegistry.methods
+            .getMaintenanceRecord(id, i)
+            .call();
+          maintenanceHistory.push({
+            timestamp: record.timestamp,
+            description: record.description,
+            cid: record.maintenanceCID
+          });
+        }
+
+        return {
+          ...partDetails,
+          maintenanceHistory,
+          initialMaintenanceCID: maintenanceHistory[0]?.cid || '',
+          initialDescription: maintenanceHistory[0]?.description || ''
+        };
+      })
+    );
+
+    res.json(parts);
+  } catch (err) {
+    console.error('Error fetching parts by owner:', err);
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+
+
+// Fetch parts by manufacturing company
+router.get('/company/:companyName', async (req, res) => {
+  try {
+    const { companyName } = req.params;
+
+    if (!companyName) {
+      return res.status(400).json({ error: 'Valid manufacturing company name required' });
+    }
+
+    // Call the smart contract's function to get parts by manufacturing company
+    const parts = await partRegistry.methods.getPartsByManufacturingCompany(companyName).call();
+
+    res.json({ parts });
+  } catch (err) {
+    console.error('Fetch Parts by Company Error:', err);
+    res.status(400).json({ error: 'Blockchain transaction failed', details: err.message });
+  }
+});
+
 
 module.exports = router;

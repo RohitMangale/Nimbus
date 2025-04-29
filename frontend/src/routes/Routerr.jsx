@@ -13,7 +13,8 @@ import MintPart from '../pages/MintPart.jsx'
 
 import DynamicForm from '../components/TemplateForm.jsx';
 import Notifications from '../components/Notifications.jsx';
-
+import PartsByOwner from '../pages/PartsByOwner.jsx';
+import PartPage from '../pages/PartPage.jsx';
 
 const Routerr = () => {
   return (
@@ -22,6 +23,8 @@ const Routerr = () => {
     <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/mint" element={<MintPart />} />
+    <Route path="companywise" element={<PartsByOwner/>}/>
+    <Route path="partdisplay" element={<PartPage/>}/>
     {/* Guest Routes: Only accessible when NOT logged in */} 
     <Route element={<GuestRoute redirectPath="/dashboard" />}>
       <Route path="/signup" element={<Signup />} />
@@ -40,13 +43,15 @@ const Routerr = () => {
       {/* <Route path="/dashboard" element={<Dashboard />} />           */}
     {/* </Route> */}
       {/* <Route path="/inventory" element={<Items />} /> */}
-      <Route/>
+
+    <Route>
+
 
       <Route path="/dashboard" element={<Dashboard />} />          
       <Route path="/notifications" element={<Notifications />} />          
     </Route>
       {/* <Route path="/inventory" element={<Items />} /> */}
-      <Route path="/form/:templateKey" element={<DynamicForm />} />
+      <Route path="/form/:templateKey" element={<DynamicForm />} /> 
 
     {/* Routes allowed to only admin and manager */}
     <Route  element={<RoleProtectedRoute allowedRoles={["admin", "manager"]} />} >
