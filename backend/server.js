@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const multer = require('multer');
-const { pinFile } = require('./ipfs');
+const { pinFile, pinJSON } = require('./ipfs');   // fixed
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
@@ -19,10 +19,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/parts', partsRouter);
-// const { web3, contract } = initWeb3();
+// Attach routes
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/categories", categoryRoutes);
+app.use("/inventory", inventoryRoutes);
+app.use("/tests", testRoutes);
+app.use("/maintenance", maintenanceRoutes);
+app.use("/reports", reportRoutes);
+app.use("/api/parts", partsRouter);
 
-// For file uploads
+// IPFS Upload Endpoints
 app.post('/api/ipfs/upload-file', upload.single('file'), async (req, res) => {
     try {
       const ipfsHash = await pinFile(req.file.buffer);
@@ -31,8 +38,7 @@ app.post('/api/ipfs/upload-file', upload.single('file'), async (req, res) => {
       res.status(500).json({ error: 'File upload failed' });
     }
 });
-  
-  // For JSON data
+
 app.post('/api/ipfs/upload-json', async (req, res) => {
     try {
       const ipfsHash = await pinJSON(req.body);
@@ -41,26 +47,6 @@ app.post('/api/ipfs/upload-json', async (req, res) => {
       res.status(500).json({ error: 'JSON upload failed' });
     }
 });
-// Auth (signup, login, etc.)
-app.use("/auth", authRoutes);
-
-// User Management (CRUD)
-app.use("/users", userRoutes);
-
-// Master Category (CRUD)
-app.use("/categories", categoryRoutes);
-
-// Inventory (CRUD for items)
-app.use("/inventory", inventoryRoutes);
-
-// Tests (CRUD)
-app.use("/tests", testRoutes);
-
-// Maintenance (CRUD)
-app.use("/maintenance", maintenanceRoutes);
-
-// Reports (CRUD)
-app.use("/reports", reportRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

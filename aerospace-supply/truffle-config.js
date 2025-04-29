@@ -69,21 +69,12 @@ module.exports = {
     //  port: 8545,            // Standard Ethereum port (default: none)
     //  network_id: "*",       // Any network (default: none)
     // },
-    companyA: {
-      host: "127.0.0.1",
-      port: 10545,
-      network_id: "1337"
-    },
-    companyB: {
+    
+    partnetwork: {
       host: "127.0.0.1",
       port: 8545,
       network_id: "1338"
     },
-    marketplace: {
-      host: "127.0.0.1",
-      port: 9545,
-      network_id: "1339"
-    }
     //
     // An additional network, but with some advanced options…
     // advanced: {
