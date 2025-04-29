@@ -79,7 +79,7 @@ exports.createEmployee = async (req, res) => {
           <p>The Nimbus Team</p>
         `,
       });
-      console.log("✅ Email sent successfully:", info.response);
+      // console.log("✅ Email sent successfully:", info.response);
     } catch (emailError) {
       console.error("❌ Failed to send email:", emailError);
     }
