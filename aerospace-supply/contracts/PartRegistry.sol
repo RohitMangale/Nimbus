@@ -19,9 +19,16 @@ contract PartRegistry {
         bool forSale;
     }
 
+    struct Listing {
+        uint256 price;
+        uint256 listDate;
+        address seller;
+    }
+
     mapping(uint256 => Part) public parts;
     mapping(string => uint256[]) public ownerParts;
     mapping(string => uint256) public serialToPartId; // New mapping
+    mapping(uint256 => Listing) public listings;
     uint256 public totalParts;
 
     // Existing events
@@ -69,17 +76,51 @@ contract PartRegistry {
 
     // New serial ID based listing functions
     function listForSaleBySerial(string memory serialId, uint256 price) public {
-        uint256 id = serialToPartId[serialId];
-        // require(id != 0, "Invalid serial ID"); // Remove validation
-        parts[id].forSale = true;
-        emit PartListed(id, price);
-    }
+    uint256 id = serialToPartId[serialId];
+    //require(id != 0, "Invalid serial ID");
+    
+    parts[id].forSale = true;
+    listings[id] = Listing({
+        price: price,
+        listDate: block.timestamp,
+        seller: msg.sender
+    });
+    
+    emit PartListed(id, price);
+}
 
     function unlistFromSaleBySerial(string memory serialId) public {
         uint256 id = serialToPartId[serialId];
         // require(id != 0, "Invalid serial ID"); // Remove validation
         parts[id].forSale = false;
         emit PartUnlisted(id);
+    }
+
+    function getMarketplaceListings() external view returns (
+        uint256[] memory,
+        string[] memory,
+        Listing[] memory
+    ) {
+        uint256 count = 0;
+        for (uint256 i = 0; i < totalParts; i++) {
+            if (parts[i].forSale) count++;
+        }
+
+        uint256[] memory ids = new uint256[](count);
+        string[] memory serialIds = new string[](count);
+        Listing[] memory listingInfo = new Listing[](count);
+        
+        uint256 index = 0;
+        for (uint256 i = 0; i < totalParts; i++) {
+            if (parts[i].forSale) {
+                ids[index] = i;
+                serialIds[index] = parts[i].serialId;
+                listingInfo[index] = listings[i];
+                index++;
+            }
+        }
+        
+        return (ids, serialIds, listingInfo);
     }
 
     // Existing functions remain unchanged below
@@ -119,11 +160,18 @@ contract PartRegistry {
     function transferOwnership(uint256 id, string memory newOwner) public {
         Part storage part = parts[id];
         string memory previousOwner = part.owner;
+        
         part.owner = newOwner;
         part.forSale = false;
+        
         ownerParts[newOwner].push(id);
         emit OwnershipTransferred(id, previousOwner, newOwner);
-        emit PartUnlisted(id);
+    }
+
+    // Simplified purchase (no payment handling)
+    function buyPart(string memory serialId, string memory newOwner) public {
+        uint256 id = serialToPartId[serialId];
+        transferOwnership(id, newOwner);
     }
 
     function listForSale(uint256 id, uint256 price) public {

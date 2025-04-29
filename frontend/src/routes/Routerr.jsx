@@ -15,6 +15,7 @@ import DynamicForm from '../components/TemplateForm.jsx';
 import Notifications from '../components/Notifications.jsx';
 import PartsByOwner from '../pages/PartsByOwner.jsx';
 import PartPage from '../pages/PartPage.jsx';
+import Marketplace from '../pages/Marketplace.jsx';
 
 const Routerr = () => {
   return (
@@ -25,6 +26,7 @@ const Routerr = () => {
     <Route path="/mint" element={<MintPart />} />
     <Route path="companywise" element={<PartsByOwner/>}/>
     <Route path="partdisplay" element={<PartPage/>}/>
+    <Route path="marketplace" element={< Marketplace/>} />
     {/* Guest Routes: Only accessible when NOT logged in */} 
     <Route element={<GuestRoute redirectPath="/dashboard" />}>
       <Route path="/signup" element={<Signup />} />
