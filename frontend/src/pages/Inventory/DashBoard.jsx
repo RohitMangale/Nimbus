@@ -28,12 +28,13 @@ import DynamicForm from "../../components/TemplateForm";
 import CreateCustomTemplate from "../../components/CreateCustomTemplate";
 import PartsMarketplace from "../../components/PartsMarketplace";
 import Notifications from "../../components/Notifications";
+import MySellingParts from "../../components/MySellingParts";
 
 const SIDEBAR_TABS = [
   { key: "inventory", icon: Package, label: "Inventory", subtabs: ["Analytics", "Stock", "Upload Component"] },
   { key: "profile", icon: User, label: "Profile", subtabs: ["Account","Roles", "Employee Management","Security"] },
   { key: "maintenenace", icon: Wrench, label: "Maintenenace", subtabs: ["Templates","Custom Template"] },
-  { key: "market", icon: Store, label: "Market", subtabs: ["Parts Marketplace"] },
+  { key: "market", icon: Store, label: "Market", subtabs: ["Parts Marketplace","My Parts"] },
   { key: "package", icon: Package, label: "Package", subtabs: ["Shipments", "Returns"] },
   { key: "another", icon: ChevronRight, label: "Another", subtabs: ["Custom1", "Custom2"] },
  // --- Lower Icons as real tabs ---
@@ -214,8 +215,10 @@ export default function Dashboard() {
         {tab === "maintenenace" && subtab === "Templates" && <Templates />}
         {/* {tab === "maintenenace" && subtab === "Template Form" && <DynamicForm />} */}
         {tab === "maintenenace" && subtab === "Custom Template" && <CreateCustomTemplate />}
+        {tab === "market" && subtab === "My Parts" && <MySellingParts />}
+        {tab === "market" && subtab === "Parts Marketplace" && <PartsMarketplace />}
         {/* {tab === "maintenenace" && subtab === "Templates" && <Templates />} */}
-        {tab === "market" && <PartsMarketplace/>}
+
         {tab === "package" && <div>Package Component Placeholder</div>}
         {tab === "another" && <div>Another Component Placeholder</div>}
 
