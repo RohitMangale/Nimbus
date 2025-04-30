@@ -22,7 +22,7 @@ function Marketplace() {
     
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Aircraft Parts Marketplace</h1>
+            {/* <h1 className="text-2xl font-bold mb-6">Aircraft Parts Marketplace</h1> */}
 
             {status && (
                 <div className="p-3 bg-gray-100 rounded break-words mt-4 text-sm">
