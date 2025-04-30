@@ -10,17 +10,18 @@ const MyParts = () => {
     const [parts, setParts] = useState([]);
     const [status, setStatus] = useState('');
     const [listingInfo, setListingInfo] = useState({}); // Track which part is being listed and its price
-
+    const user = localStorage.getItem('user')
+    const name = user ? JSON.parse(user).id : null
     const fetchPartsByOwner = async () => {
         try {
-            if (!ownerName) {
+            if (!name) {
                 setStatus('⚠️ Please enter a valid owner name.');
                 return;
             }
 
             setStatus('⏳ Fetching parts...');
             const response = await axios.get(
-                `http://localhost:5000/api/parts/owner/${ownerName}`
+                `http://localhost:5000/api/parts/owner/${name}`
             );
             setParts(response.data);
             setStatus('');

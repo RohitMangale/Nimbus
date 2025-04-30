@@ -276,12 +276,12 @@ router.post('/maintenance', async (req, res) => {
   }
 });
 
-router.get('/owner/:ownerName', async (req, res) => {
+router.get('/owner/:name', async (req, res) => {
   try {
-    const { ownerName } = req.params;
-
+    const { name } = req.params;
+    // console.log(ownerName);
     // Get part IDs
-    const rawPartIds = await partRegistry.methods.getPartsByOwner(ownerName).call();
+    const rawPartIds = await partRegistry.methods.getPartsByOwner(name).call();
     if (!rawPartIds.length) return res.status(404).json({ error: 'No parts found' });
 
     // Fetch detailed part information

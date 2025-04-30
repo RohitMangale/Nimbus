@@ -29,6 +29,8 @@ import CreateCustomTemplate from "../../components/CreateCustomTemplate";
 import PartsMarketplace from "../../components/PartsMarketplace";
 import Notifications from "../../components/Notifications";
 import MyParts from "../../components/MyParts";
+import PartsByOwner from "../PartsByOwner";
+import Marketplace from "../Marketplace";
 
 const SIDEBAR_TABS = [
   { key: "inventory", icon: Package, label: "Inventory", subtabs: [ "Upload Component"] },
@@ -216,8 +218,8 @@ export default function Dashboard() {
         {tab === "maintenenace" && subtab === "Templates" && <Templates />}
         {/* {tab === "maintenenace" && subtab === "Template Form" && <DynamicForm />} */}
         {tab === "maintenenace" && subtab === "Custom Template" && <CreateCustomTemplate />}
-        {tab === "maintenenace" && subtab === "Parts Marketplace" && <PartsMarketplace />}
-        {tab === "maintenenace" && subtab === "My Parts" && <MyParts />}
+        {tab === "market" && subtab === "Parts Marketplace" && <Marketplace />}
+        {tab === "market" && subtab === "My Parts" && <PartsByOwner />}
         {/* {tab === "maintenenace" && subtab === "Templates" && <Templates />} */}
 
         {tab === "package" && <div>Package Component Placeholder</div>}

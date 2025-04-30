@@ -7,8 +7,10 @@ function UploadComponentsForm() {
     const [manufacturingDate, setManufacturingDate] = useState('');
     const [initialDescription, setInitialDescription] = useState('');
     const [maintenanceFile, setMaintenanceFile] = useState(null);
+    const user = localStorage.getItem('user')
+    const name = user ? JSON.parse(user).name : null
     const [company, setCompany] = useState('');
-    const [owner, setOwner] = useState('');
+    const [owner, setOwner] = useState(name);
     const [status, setStatus] = useState('');
 
     const uploadToIPFS = async (file) => {
@@ -139,7 +141,7 @@ function UploadComponentsForm() {
                             className="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-
+{/* 
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Owner Company Name</label>
                         <input
@@ -148,7 +150,7 @@ function UploadComponentsForm() {
                             onChange={(e) => setOwner(e.target.value)}
                             className="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                    </div>
+                    </div> */}
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Upload Maintenance File</label>
