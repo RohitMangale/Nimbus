@@ -28,12 +28,14 @@ import DynamicForm from "../../components/TemplateForm";
 import CreateCustomTemplate from "../../components/CreateCustomTemplate";
 import PartsMarketplace from "../../components/PartsMarketplace";
 import Notifications from "../../components/Notifications";
+import MyParts from "../../components/MyParts";
 
 const SIDEBAR_TABS = [
-  { key: "inventory", icon: Package, label: "Inventory", subtabs: ["Analytics", "Stock", "Upload Component"] },
-  { key: "profile", icon: User, label: "Profile", subtabs: ["Account","Roles", "Employee Management","Security"] },
+  { key: "inventory", icon: Package, label: "Inventory", subtabs: [ "Upload Component"] },
+  // { key: "inventory", icon: Package, label: "Inventory", subtabs: ["Analytics", "Stock", "Upload Component"] },
+  { key: "profile", icon: User, label: "Profile", subtabs: ["Account", "Employee Management","Security"] },
   { key: "maintenenace", icon: Wrench, label: "Maintenenace", subtabs: ["Templates","Custom Template"] },
-  { key: "market", icon: Store, label: "Market", subtabs: ["Parts Marketplace"] },
+  { key: "market", icon: Store, label: "Market", subtabs: ["Parts Marketplace","My Parts"] },
   { key: "package", icon: Package, label: "Package", subtabs: ["Shipments", "Returns"] },
   { key: "another", icon: ChevronRight, label: "Another", subtabs: ["Custom1", "Custom2"] },
  // --- Lower Icons as real tabs ---
@@ -48,7 +50,7 @@ export default function Dashboard() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tab,setTab] = useState("inventory")
-  const [subtab, setSubtab] = useState("Analytics");
+  const [subtab, setSubtab] = useState("Upload Component");
   const currentTab = SIDEBAR_TABS.find((t) => t.key === tab);
   // State for manual add item fields, matching backend itemController fields
   const [newItem, setNewItem] = useState({
@@ -194,15 +196,15 @@ export default function Dashboard() {
 
     {/* Main Content */}
     <div className="flex-1 overflow-hidden">
-      <div className="p-6 max-h-screen mb-3 overflow-scroll">
+      <div className="p-6 max-h-screen h-full  overflow-scroll mb-10">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold">{`${currentTab?.label} - ${subtab}`}</h1>
 
         </div>
 
         {/* Dummy content renderer */}
-        {tab === "inventory" && subtab === "Analytics" && <Analytics />}
-        {tab === "inventory" && subtab === "Stock" && <Stock />}
+        {/* {tab === "inventory" && subtab === "Analytics" && <Analytics />}
+        {tab === "inventory" && subtab === "Stock" && <Stock />} */}
         {tab === "inventory" && subtab === "Upload Component" && <UploadComponentsForm />}
 
         {tab === "profile" && subtab === "Account" && <UserProfileForm />}
@@ -214,8 +216,10 @@ export default function Dashboard() {
         {tab === "maintenenace" && subtab === "Templates" && <Templates />}
         {/* {tab === "maintenenace" && subtab === "Template Form" && <DynamicForm />} */}
         {tab === "maintenenace" && subtab === "Custom Template" && <CreateCustomTemplate />}
+        {tab === "maintenenace" && subtab === "Parts Marketplace" && <PartsMarketplace />}
+        {tab === "maintenenace" && subtab === "My Parts" && <MyParts />}
         {/* {tab === "maintenenace" && subtab === "Templates" && <Templates />} */}
-        {tab === "market" && <PartsMarketplace/>}
+
         {tab === "package" && <div>Package Component Placeholder</div>}
         {tab === "another" && <div>Another Component Placeholder</div>}
 

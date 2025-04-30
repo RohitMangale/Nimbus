@@ -1,53 +1,26 @@
 
 import PartsCard from "./PartsCard";
-const mockParts = [
-  {
-    name: "Turbine Blade Assembly",
-    partNumber: "TB-2024-001",
-    category: "Engine Components",
-    ownedBy: "AeroCorp Industries",
-    condition: "New",
-    location: "Warehouse A",
-    lastInspection: "2024-03-15"
-  },
-  {
-    name: "Landing Gear Strut",
-    partNumber: "LG-2024-045",
-    category: "Landing Systems",
-    ownedBy: "SkyTech Solutions",
-    condition: "Used",
-    location: "Hangar B",
-    lastInspection: "2024-02-28"
-  },
-  {
-    name: "Fuselage Panel",
-    partNumber: "FP-2024-089",
-    category: "Structural",
-    ownedBy: "GlobalAir Maintenance",
-    condition: "New",
-    location: "Storage C",
-    lastInspection: "2024-04-01"
-  },
-  {
-    name: "Avionics Control Unit",
-    partNumber: "ACU-2024-123",
-    category: "Electronics",
-    ownedBy: "AviationPlus Corp",
-    condition: "Refurbished",
-    location: "Lab D",
-    lastInspection: "2024-04-15"
-  },
-  {
-    name: "Hydraulic Pump",
-    partNumber: "HP-2024-234",
-    category: "Hydraulics",
-    ownedBy: "TechOps Services",
-    condition: "Used",
-    location: "Warehouse E",
-    lastInspection: "2024-03-30"
-  }
-];
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+
 const PartsMarketplace = () => {
+  const [listings, setListings] = useState([]);
+  const [status, setStatus] = useState('');
+  useEffect(() => {
+      fetchMarketplace();
+  }, []);
+
+  const fetchMarketplace = async () => {
+      try {
+          setStatus('⏳ Loading marketplace...');
+          const response = await axios.get('http://localhost:5000/api/parts/marketplace');
+          setListings(response.data);
+          setStatus('');
+      } catch (error) {
+          setStatus(`❌ Error: ${error.response?.data?.error || error.message}`);
+      }
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
@@ -58,9 +31,19 @@ const PartsMarketplace = () => {
       </header>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {mockParts.map((part) => (
-        <PartsCard key={part.partNumber} {...part} />
+        {status && (
+                <div className="p-3 bg-gray-100 rounded break-words mt-4 text-sm">
+                    {status}
+                </div>
+            )}
+      {listings.map((part, index) => (
+        <PartsCard key={index} part={part} />
       ))}
+                  {listings.length === 0 && !status && (
+                <div className="text-center py-8 text-gray-500">
+                    No parts currently listed for sale
+                </div>
+            )}
     </div>
       </main>
     </div>
