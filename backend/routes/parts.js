@@ -199,41 +199,122 @@ router.get('/marketplace', async (req, res) => {
 
 router.post('/transfer', async (req, res) => {
   try {
-    const { id, to } = req.body;
+    const { serialId, currentOwner, newOwner } = req.body;
 
-    if (!id || isNaN(id)) {
-      return res.status(400).json({ error: 'Valid Part ID is required' });
+    // Validate inputs
+    const errors = [];
+    // Validate inputs with proper type checks
+    if (!serialId || typeof serialId !== 'string') {
+      return res.status(400).json({ error: 'Valid serial ID required' });
     }
-    if (!web3.utils.isAddress(to)) {
-      return res.status(400).json({ error: 'Valid recipient address is required' });
+    if (!currentOwner || typeof currentOwner !== 'string') {
+      return res.status(400).json({ error: 'Valid current owner required' });
+    }
+    if (!newOwner || typeof newOwner !== 'string') {
+      return res.status(400).json({ error: 'Valid new owner required' });
     }
 
+    // Get part ID and validate existence
+    const partId = await partRegistry.methods.serialToPartId(serialId).call();
+    if (partId === 0) return res.status(404).json({ error: 'Part not found' });
+
+    // Get part details with safety checks
+    const part = await partRegistry.methods.parts(partId).call();
+    if (!part.owner) {
+      return res.status(500).json({ error: 'Invalid part data from blockchain' });
+    }
+
+    // Normalize owner names
+    const currentOwnerNormalized = currentOwner.trim().toLowerCase();
+    const partOwnerNormalized = part.owner.trim().toLowerCase();
+    const newOwnerNormalized = newOwner.trim().toLowerCase();
+
+    // Ownership validation
+    if (partOwnerNormalized !== currentOwnerNormalized) {
+      return res.status(400).json({ 
+        error: `Ownership mismatch. Current owner: ${part.owner}` 
+      });
+    }
+
+    if (partOwnerNormalized === newOwnerNormalized) {
+      return res.status(400).json({ 
+        error: 'Part already belongs to this owner' 
+      });
+    }
+
+    // Perform transfer
     const [account] = await web3.eth.getAccounts();
-
-    const gasEstimate = await partRegistry.methods
-      .transferOwnership(id, to)
-      .estimateGas({ from: account });
-
     const tx = await partRegistry.methods
-      .transferOwnership(id, to)
+      .transferOwnership(partId, newOwner)
       .send({
         from: account,
-        gas: Math.floor(gasEstimate * 1.2),
+        gas: 500000,
         gasPrice: await web3.eth.getGasPrice()
       });
 
     res.json({
       success: true,
-      txHash: tx.transactionHash,
-      blockNumber: tx.blockNumber
+      previousOwner: part.owner,
+      newOwner,
+      txHash: tx.transactionHash
     });
 
   } catch (err) {
-    console.error('Transfer Ownership Error:', err);
-    res.status(400).json({ error: 'Blockchain transaction failed', details: err.message });
+    console.error('Transfer Error:', err);
+    const errorMessage = err.data?.message || err.message;
+    res.status(400).json({ 
+      error: 'Transfer failed',
+      details: errorMessage.includes('revert') 
+        ? errorMessage.split('revert ')[1] 
+        : errorMessage
+    });
   }
 });
 
+router.get('/serial/:serialId', async (req, res) => {
+  try {
+    const { serialId } = req.params;
+
+    // Get part ID from blockchain
+    const partId = await partRegistry.methods.serialToPartId(serialId).call();
+    if (partId === 0) return res.status(404).json({ error: 'Part not found' });
+
+    // Get full part details
+    const partDetails = await partRegistry.methods.getPartDetails(partId).call();
+    
+    // Get maintenance history
+    const maintenanceCount = await partRegistry.methods
+      .getMaintenanceHistoryCount(partId)
+      .call();
+    
+    const maintenanceHistory = [];
+    for (let i = 0; i < maintenanceCount; i++) {
+      const record = await partRegistry.methods
+        .getMaintenanceRecord(partId, i)
+        .call();
+      maintenanceHistory.push({
+        timestamp: record.timestamp,
+        description: record.description,
+        cid: record.maintenanceCID
+      });
+    }
+
+    res.json({
+      ...partDetails,
+      id: partId,
+      maintenanceHistory,
+      initialMaintenanceCID: maintenanceHistory[0]?.cid || '',
+      initialDescription: maintenanceHistory[0]?.description || ''
+    });
+
+  } catch (err) {
+    console.error('Get Part Error:', err);
+    res.status(400).json({ 
+      error: 'Failed to fetch part',
+      details: err.message 
+    });
+  }
+});
 // add a maintenance
 
 router.post('/maintenance', async (req, res) => {
