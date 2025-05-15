@@ -49,7 +49,8 @@ const SIDEBAR_TABS = [
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [groupItems, setGroupItems] = useState(false);
-
+  const user = localStorage.getItem('user');
+  const firstname = user ? JSON.parse(user).firstname : null;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tab,setTab] = useState("inventory")
   const [subtab, setSubtab] = useState("Upload Component");
@@ -209,10 +210,17 @@ export default function Dashboard() {
         {tab === "inventory" && subtab === "Stock" && <Stock />} */}
         {tab === "inventory" && subtab === "Upload Component" && <UploadComponentsForm />}
 
-        {tab === "profile" && subtab === "Account" && <UserProfileForm />}
-        {tab === "profile" && subtab === "Roles" && <CreateRoles />}
-        {tab === "profile" && subtab === "Security" && <PasswordChangeForm />}
-        {tab === "profile" && subtab === "Employee Management" && <EmployeeManagement />}
+        {!firstname && tab === "profile" && (
+          <>
+            {subtab === "Account" && <UserProfileForm />}
+            {subtab === "Roles" && <CreateRoles />}
+            {subtab === "Security" && <PasswordChangeForm />}
+            {subtab === "Employee Management" && <EmployeeManagement />}
+          </>
+        )}
+
+
+        
 
         {/* You can add additional conditions for each tab + subtab combo below */}
         {tab === "maintenenace" && subtab === "Templates" && <Templates />}
